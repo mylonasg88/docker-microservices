@@ -3,8 +3,6 @@ var router = express.Router();
 const axios = require('axios');
 const fetch = require('node-fetch');
 
-
-
 router.get("/users", async (req, res) => {
     // console.log(process.env);
     console.log('Running');
@@ -19,17 +17,24 @@ router.get("/users", async (req, res) => {
     //     res.send(error);
     // })
 
-    const cmd = await doCurl();
-    console.log(cmd);
-    // return res.send(cmd);
-
-    fetch("http://dc-node:9000").then(response => {
-        console.log(response.data);
-        res.send([{name: "George"}, {name: "Giannina"}]);
-    }).catch(error => {
+    var http = require('http');
+    try {
+        http.get("http://dc-node:9000", function (result) {
+            console.log("Received response: " + result.statusCode);
+            res.send(result)
+        });
+    } catch(error){
         console.log(error);
         res.send(error);
-    })
+    }
+
+    // fetch("http://dc-node:9000").then(response => {
+    //     console.log(response.data);
+    //     res.send([{name: "George"}, {name: "Giannina"}]);
+    // }).catch(error => {
+    //     console.log(error);
+    //     res.send(error);
+    // })
 
     // axios(options).then(response => {
     //     console.log(response.data);
