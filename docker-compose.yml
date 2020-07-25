@@ -6,7 +6,10 @@ networks:
 services:
   dc-php:
     container_name: dc-php
-    image: richarvey/nginx-php-fpm
+#    image: richarvey/nginx-php-fpm
+    build:
+      context: ./dc-php
+      dockerfile: Dockerfile
     networks:
      - dc-microservices
 

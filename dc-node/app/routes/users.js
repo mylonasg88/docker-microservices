@@ -19,7 +19,11 @@ router.get("/users", async (req, res) => {
     //     res.send(error);
     // })
 
-    fetch("http://localhost:8082").then(response => {
+    const cmd = await doCurl();
+    console.log(cmd);
+    // return res.send(cmd);
+
+    fetch("http://dc-node:9000").then(response => {
         console.log(response.data);
         res.send([{name: "George"}, {name: "Giannina"}]);
     }).catch(error => {
@@ -35,5 +39,22 @@ router.get("/users", async (req, res) => {
     //     res.send({Error: error})
     // });
 });
+
+async function doCurl(){
+    const { exec } = require("child_process");
+
+    exec("curl dc-node-2:9000", (error, stdout, stderr) => {
+        if (error) {
+            console.log(`error: ${error.message}`);
+            return error;
+        }
+        if (stderr) {
+            console.log(`stderr: ${stderr}`);
+            return stderr;
+        }
+        console.log(`stdout: ${stdout}`);
+        return stdout
+    });
+}
 
 module.exports = router;
