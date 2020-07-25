@@ -1,0 +1,69 @@
+version: "3.8"
+
+networks:
+  dc-microservices:
+
+services:
+  dc-php:
+    container_name: dc-php
+    image: richarvey/nginx-php-fpm
+    networks:
+     - dc-microservices
+
+    # restart: always
+    ports:
+     - 8081:80
+    volumes:
+     - ./dc-php:/var/www/dc-php
+
+  dc-node:
+    container_name: dc-node
+    # image: prorva/dc-node
+    build:
+      context: ./dc-node
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      - dc-node-2
+    links:
+      - dc-node-2
+    networks:
+      - dc-microservices
+
+    environment:
+        PORT: 8080
+        NAME: 'George'
+        RACK_ENV: development
+        SHOW: 'true'
+        VALUE: 4000
+    env_file:
+      - variables.env
+    ports:
+      - 8080:80
+    volumes:
+      - ./dc-node/app:/var/www/dc-node/app
+    # command: nodemon /var/www/dc-node/index.js
+    # command: ["/var/www/dc-node/entrypoint.sh", "--privileged"]
+
+  dc-node-2:
+    container_name: dc-node-2
+    # image: prorva/dc-node
+    build:
+      context: ./dc-node
+      dockerfile: Dockerfile
+    restart: always
+    networks:
+      - dc-microservices
+
+    environment:
+      PORT: 8080
+      NAME: 'George'
+      RACK_ENV: development
+      SHOW: 'true'
+      VALUE: 4000
+    env_file:
+      - variables.env
+    ports:
+      - 8082:9000
+    volumes:
+      - ./dc-node-2/app:/var/www/dc-node/app

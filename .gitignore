@@ -1,0 +1,6 @@
+# Docker
+.history
+
+# InteliJ
+.idea
+/*/node_modules
