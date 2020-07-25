@@ -4,69 +4,160 @@ networks:
   dc-microservices:
 
 services:
-  dc-php:
-    container_name: dc-php
-#    image: richarvey/nginx-php-fpm
-    build:
-      context: ./dc-php
-      dockerfile: Dockerfile
-    networks:
-     - dc-microservices
+#  dc-php:
+#    container_name: dc-php
+##    image: richarvey/nginx-php-fpm
+#    build:
+#      context: ./dc-php
+#      dockerfile: Dockerfile
+#    networks:
+#     - dc-microservices
+#
+#    # restart: always
+#    ports:
+#     - 8081:80
+#    volumes:
+#     - ./dc-php:/var/www/dc-php
 
-    # restart: always
-    ports:
-     - 8081:80
-    volumes:
-     - ./dc-php:/var/www/dc-php
-
-  dc-node:
-    container_name: dc-node
-    # image: prorva/dc-node
-    build:
-      context: ./dc-node
-      dockerfile: Dockerfile
+#  dc-node:
+#    container_name: dc-node
+#    # image: prorva/dc-node
+#    build:
+#      context: ./dc-node
+#      dockerfile: Dockerfile
+#    restart: always
+#    depends_on:
+#      - dc-node-2
+#    links:
+#      - dc-node-2
+#    networks:
+#      - dc-microservices
+#
+#    environment:
+#        PORT: 8080
+#        NAME: 'George'
+#        RACK_ENV: development
+#        SHOW: 'true'
+#        VALUE: 4000
+#    env_file:
+#      - variables.env
+#    ports:
+#      - 8080:80
+#    volumes:
+#      - ./dc-node/app:/var/www/dc-node/app
+#    # command: nodemon /var/www/dc-node/index.js
+#    # command: ["/var/www/dc-node/entrypoint.sh", "--privileged"]
+#
+#  dc-node-2:
+#    container_name: dc-node-2
+#    # image: prorva/dc-node
+#    build:
+#      context: ./dc-node
+#      dockerfile: Dockerfile
+#    restart: always
+#    networks:
+#      - dc-microservices
+#
+#    environment:
+#      PORT: 8080
+#      NAME: 'George'
+#      RACK_ENV: development
+#      SHOW: 'true'
+#      VALUE: 4000
+#    env_file:
+#      - variables.env
+#    ports:
+#      - 8082:9000
+#    volumes:
+#      - ./dc-node-2/app:/var/www/dc-node/app
+  db-1:
+    container_name: db-1
+    image: mysql:5.7
     restart: always
-    depends_on:
-      - dc-node-2
-    links:
-      - dc-node-2
-    networks:
-      - dc-microservices
-
     environment:
-        PORT: 8080
-        NAME: 'George'
-        RACK_ENV: development
-        SHOW: 'true'
-        VALUE: 4000
-    env_file:
-      - variables.env
+      MYSQL_DATABASE: 'db'
+      # So you don't have to use root, but you can if you like
+      MYSQL_USER: 'user'
+      # You can use whatever password you like
+      MYSQL_PASSWORD: 'password'
+      # Password for root access
+      MYSQL_ROOT_PASSWORD: 'password'
     ports:
-      - 8080:80
+      # <Port exposed> : < MySQL Port running inside container>
+      - '3306:3306'
+    expose:
+      # Opens port 3306 on the container
+      - '3306'
+      # Where our data will be persisted
     volumes:
-      - ./dc-node/app:/var/www/dc-node/app
-    # command: nodemon /var/www/dc-node/index.js
-    # command: ["/var/www/dc-node/entrypoint.sh", "--privileged"]
+      - my-db:/var/lib/mysql
 
-  dc-node-2:
-    container_name: dc-node-2
-    # image: prorva/dc-node
-    build:
-      context: ./dc-node
-      dockerfile: Dockerfile
+  db-2:
+    container_name: db-2
+    image: mysql:5.7
     restart: always
-    networks:
-      - dc-microservices
-
-    environment:
-      PORT: 8080
-      NAME: 'George'
-      RACK_ENV: development
-      SHOW: 'true'
-      VALUE: 4000
-    env_file:
-      - variables.env
     ports:
-      - 8082:9000
+      - 3310:3306
+    expose:
+      - 3310
     volumes:
-      - ./dc-node-2/app:/var/www/dc-node/app
+      - my-db2:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: 'db'
+      # So you don't have to use root, but you can if you like
+      MYSQL_USER: 'user'
+      # You can use whatever password you like
+      MYSQL_PASSWORD: 'password'
+      # Password for root access
+      MYSQL_ROOT_PASSWORD: 'password'
+
+#  db-pst:
+#    image: postgres
+#    restart: always
+#    ports:
+#      - 5433:5432
+#    expose:
+#      - 5433
+#    environment:
+#      POSTGRES_PASSWORD: password
+
+  db-3-pst:
+    image: postgres # use latest official postgres version
+    ports:
+      - 5432:5432
+    expose:
+      - 5432
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: db
+    volumes:
+      - db-3-pst-data:/var/lib/postgresql/data/ # persist data even if container shuts down
+
+#  dc-postgres:
+#    container_name: dc-postgres
+#    restart: always
+#    build:
+#      context: dc-postgres
+#      dockerfile: Dockerfile
+##    networks:
+##      - dc-microservices
+#    volumes:
+#      - database-data2:/var/lib/postgresql/data/
+#    ports:
+#      - 5432:5432
+#    expose:
+#      - 5432
+#    environment:
+#      POSTGRES_USER: power_user
+#      POSTGRES_PASSWORD: secret
+#      POSTGRES_DB: dc_microservices
+
+
+volumes:
+  my-db:
+  my-db2:
+  db-3-pst-data:
+  database-data2:
+
+
