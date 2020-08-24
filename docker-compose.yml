@@ -14,7 +14,7 @@ services:
     networks:
       - dc-microservices
     ports:
-      - 8081:80
+      - 8085:80
     volumes:
       - ./dc-php:/var/www/dc-php
 
@@ -31,17 +31,19 @@ services:
       - dc-node-2
     networks:
       - dc-microservices
-
     environment:
       PORT: 8080
-      NAME: 'George'
+      NAME: "George"
       RACK_ENV: development
-      SHOW: 'true'
+      SHOW: "true"
       VALUE: 4000
     env_file:
       - variables.env
     ports:
       - 8080:80
+    # REMEMBER: index.js must be in same folder as node_modules.
+    # But that folder can not be shared as host's filesystem
+    # will override container files and node_modules will be lost.
     volumes:
       - ./dc-node/app:/var/www/dc-node/app
 
@@ -57,9 +59,9 @@ services:
 
     environment:
       PORT: 8080
-      NAME: 'George'
+      NAME: "George"
       RACK_ENV: development
-      SHOW: 'true'
+      SHOW: "true"
       VALUE: 4000
     env_file:
       - variables.env
@@ -73,19 +75,19 @@ services:
     image: mysql:5.7
     restart: always
     environment:
-      MYSQL_DATABASE: 'db'
+      MYSQL_DATABASE: "db"
       # So you don't have to use root, but you can if you like
-      MYSQL_USER: 'user'
+      MYSQL_USER: "user"
       # You can use whatever password you like
-      MYSQL_PASSWORD: 'password'
+      MYSQL_PASSWORD: "password"
       # Password for root access
-      MYSQL_ROOT_PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD: "password"
     ports:
       # <Port exposed> : < MySQL Port running inside container>
-      - '3306:3306'
+      - "3306:3306"
     expose:
       # Opens port 3306 on the container
-      - '3306'
+      - "3306"
       # Where our data will be persisted
     volumes:
       - my-db:/var/lib/mysql

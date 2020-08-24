@@ -4,7 +4,7 @@ const port = 9000;
 
 const userRoutes = require('./routes/users');
 
-app.get("/", (req, res) => res.send("Hello World 43!sdf"));
+app.get("/", (req, res) => res.send("<h3>Hello World from Node 2</h3>"));
 app.use("/", userRoutes);
 
 app.listen(port, () =>

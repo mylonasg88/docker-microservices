@@ -8,9 +8,12 @@ curl_setopt($ch, CURLOPT_PORT, 9000);
 
 $data = curl_exec($ch);
 if(curl_error($ch)) {
+    echo 'Curl request had an error<br>';
     echo curl_error($ch);
 } else {
+    echo 'Curl request was successful:';
     var_dump($data);
+    echo '<br>';
 }
 
 curl_close($ch);
